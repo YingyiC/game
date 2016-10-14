@@ -7,6 +7,7 @@ var mainState = {
         // That's where we load the game's assets
         // Load the image
         game.load.image("French Fries","French Fries.gif");
+        game.load.image("Salt","Salt.jpg");
     }
     , create: function () {
         // This function is called after the 'preload' function 
@@ -16,9 +17,14 @@ var mainState = {
         this.player = game.add.sprite(300,300,"French Fries");
         this.player.scale.setTo(.15,.15);
         
+        this.coins = game.add.group();
+        this.coins.enableBody = true;
+        this.coins.createMultiple(10,"Salt");
+        
         game.physics.arcade.enable(this.player);
         this.player.body.gravity.y = 300;
         this.player.body.collideWorldBounds= true;
+        game.time.events.loop(300, this.addCoins,this);
     }
     , update: function () {
         this.player.body.velocity.x = 0;
@@ -37,6 +43,24 @@ var mainState = {
         else if(this.keyboard.down.isDown) {
              this.player.body.velocity.y = 300;}
         // This contains Game Logic 
+    }
+    , addCoins: function(){
+        var coin = this.coins.getFirstDead();
+        
+        // If there isn't any dead coin, do nothing 
+        if (!coin) {
+            return;
+        }
+        coin.scale.setTo(.2,.2);
+        coin.anchor.setTo(0.5, 1);
+        coin.reset( game.rnd.pick([game.width/2,0]),0);
+        coin.body.gravity.y = 300;
+        coin.body.velocity.x = 100 *
+        game.rnd.pick([-2, 2]);
+        coin.body.bounce.x = 1;
+        coin.checkWorldBounds = true;
+        coin.outOfBoundsKill = true;
+        
     }
 };
 // We initialize Phaser
